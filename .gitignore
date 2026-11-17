@@ -53,3 +53,22 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+
+
+# --- Custom additions for my_document_parser ---
+
+# WebAssembly output
+*.wasm
+
+# Modern build directories
+build/
+cmake-build-*/
+out/
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
