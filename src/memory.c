@@ -10,7 +10,7 @@ raw_text_block_t* create_block(const char* content, int page_number, block_type_
          fprintf(stderr, "Memory allocation code not_a_block\n");
          return NULL;
      }
-           block->id = NULL;  //for future possible updates, we can generate a unique id here if needed
+           block->id = NULL;
            block->content = NULL;
 
     // Duplicate the string
@@ -59,9 +59,29 @@ parsed_document_t* create_document(const char* source_path){
 }
 
 void free_doc(parsed_document_t* doc){
-     if(!doc) return;
-     
-     if(doc->source_file_path) free(doc->source_file_path);
+    if (!doc) {fprintf(stderr, "Attempted to free a non-document pointer\n");
+     return;}
+    if (doc->source_file_path) free(doc->source_file_path);
+    if (doc->id) free(doc->id);
+    if (doc->pages) {
+        for (size_t i = 0; i < doc->page_count; i++) {
+            parsed_page_t* page = doc->pages[i];
+            if (!page) continue; 
+            if (page->blocks) {
+                for (size_t j = 0; j < page->block_count; j++) {
+                    raw_text_block_t* block = page->blocks[j];
+                    if (!block) continue;
+                    if (block->id) free(block->id);
+                    if (block->content) free(block->content);
+                    
+                    free(block);
+                }
+                free(page->blocks);
+            }
 
+            free(page);
+        }
+        free(doc->pages);
+    }
+    free(doc);
 }
-
