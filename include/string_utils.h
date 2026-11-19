@@ -2,14 +2,11 @@
 #define STRING_UTILS_H
 #include <string.h>
 #include "../include/types.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #include <stdbool.h> /* For bool type */
 #include <stddef.h>  /* For size_t */
-
-/* 
- Generates a unique ID string using an internal counter, Returns NULL if memory allocation fails.
- */
-char* generate_id(void);
 
 /* 
  * Returns a normalized copy of the input string.
@@ -17,6 +14,7 @@ char* generate_id(void);
  */
 char* normalize_text(const char* input);
 
+block_type_t determine_block_type(const char* text);
 /* 
  ""at first look"" check to see if a string contains latex notation,Returns true if math-like content is detected, false otherwise.
  */
@@ -26,7 +24,10 @@ bool looks_like_math(const char* content);
  Reads an entire file into a null-terminated string, Returns NULL if the file cannot be opened or memory allocation fails.
  */
 char* read_file_contents(const char* filepath);
+//quick check if it uses double newlines to separate paragraphs, Returns true if double newlines density is found, false otherwise.
+bool double_newlines_parag(const char* text);
 
+char** split_into_paragraphs(const char* text, size_t* count, bool use_double_newline);
 
 
 #endif // STRING_UTILS_H

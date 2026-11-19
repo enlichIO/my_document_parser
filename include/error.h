@@ -10,6 +10,8 @@ typedef enum parser_error_code {
      ERROR_UNKNOWN,           // An unknown error occurred
 } parser_error_t;
 
+void set_error(parser_error_t err);
+parser_error_t get_error(void);
 const char* parser_error_to_string(parser_error_t err);
 
 #endif

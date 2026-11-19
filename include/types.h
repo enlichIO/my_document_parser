@@ -13,19 +13,25 @@ typedef enum {
     BLOCK_TYPE_CODEBLOCK,
     BLOCK_TYPE_IMAGE,
 } block_type_t;
-/* raw text block structure
-id= unique identifier for tracking
-content= the text content of the text
-type= the type of the text block (e.g., text, math, heading, etc..)
-confidence= the confidence score of the text, from 0,0 to 1, expecially or easy to break rendered latex or images
-page_number(ex line_numbber)= the page number of the text block in the source doc
-*/
+/*
+     Represents a raw text block extracted from a document.
+     id=Format: "{doc_id}_p{page}_b{index}"
+     context=The actual text content
+     type=The type of block (text, math, heading, etc.)
+     confidence=Confidence score for the block's content (0.0 to 1.0)
+     page_number=The page number in the document where the block was taken
+     line_start=The starting line of the block in the page
+     line_end=The ending line of the block in the page
+      
+ */
 typedef struct {
-     char* id;
-     int page_number;
-     char* content;
-     block_type_t block_type;
-     float confidence;
+    char* id;
+    char* content;
+    block_type_t type;
+    float confidence;
+    size_t page_number;
+    size_t line_start;
+    size_t line_end;
 } raw_text_block_t;
 
 /*parsed pages structure (page container)
@@ -33,8 +39,9 @@ page_id= unique identifier for tracking the page= the filename of the source doc
 block_count= the number of text blocks in the page
 */
 typedef struct parsed_page{
-     int page_number;
+     size_t page_number;
      size_t block_count;
+     size_t block_capacity;
      raw_text_block_t** blocks;
 } parsed_page_t;
 
@@ -43,12 +50,14 @@ id= unique identifier for tracking the doc
 (redundant)source_filename= the filename of the source doc
 source_file_path= the path of the source doc
 page_count= the number of pages in the doc
+page_capacity= the allocated capacity for the pages array
 */
 typedef struct parsed_document {
-     char* id;
-     char* source_file_path;
-     parsed_page_t** pages;
-     size_t page_count;
+    char* id;                     /* Unique document ID (UUID format) */
+    char* source_file_path;       /* Path to original source file */
+    size_t page_count;            /* Number of pages in document */
+    size_t page_capacity;         /* Allocated capacity for pages array */
+    parsed_page_t** pages;        /* Array of pointers to pages */
 } parsed_document_t;
 
 #endif
