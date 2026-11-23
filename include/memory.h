@@ -2,6 +2,7 @@
 #define MEMORY_H
 
 #include "types.h"
+
 // create a parsed_document_t structure and initialize its fields, Returns NULL if memory allocation fails.
 parsed_document_t* create_document(const char* source_path);
 // create a parsed_page_t structure and initialize its fields, Returns NULL if memory allocation fails.
@@ -14,5 +15,6 @@ int add_block_to_page(parsed_page_t* page, raw_text_block_t* block, const char* 
 int add_page_to_document(parsed_document_t* doc, parsed_page_t* page);
 //recursively free a parsed_document_t structure and all its associated pages and blocks
 void free_doc(parsed_document_t* doc);
+void cleanup_parse_state(parsed_document_t* doc, parsed_page_t* page, char** paragraphs, size_t paragraph_count, char* contents);
 
 #endif

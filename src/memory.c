@@ -5,9 +5,9 @@
 #include <string.h>
 #include <stdio.h>
 
-/**
- * Create a raw text block.
- * Note: ID is not generated here; it is generated when added to a page.
+/*
+Create a raw text block.
+Note: ID is not generated here; it is generated when added to a page.
  */
 raw_text_block_t* create_block(const char* content, size_t page_number, block_type_t type, size_t line_start, size_t line_end) {
     if (!content) {
@@ -42,9 +42,8 @@ raw_text_block_t* create_block(const char* content, size_t page_number, block_ty
     return block;
 }
 
-/**
- * Create an empty page.
- */
+//  Create an empty page.
+ 
 parsed_page_t* create_page(size_t page_number) {
     parsed_page_t* page = (parsed_page_t*)malloc(sizeof(parsed_page_t));
     if (!page) {
@@ -61,9 +60,8 @@ parsed_page_t* create_page(size_t page_number) {
     return page;
 }
 
-/**
- * Create an empty document.
- */
+// Create an empty document.
+ 
 parsed_document_t* create_document(const char* source_path) {
     if (!source_path) {
         set_error(ERROR_INVALID_FORMAT);
@@ -92,9 +90,8 @@ parsed_document_t* create_document(const char* source_path) {
     return doc;
 }
 
-/**
- * Add a block to a page. Generates the block ID.
- */
+// Add a block to a page. Generates the block ID.
+ 
 int add_block_to_page(parsed_page_t* page, raw_text_block_t* block, const char* doc_id) {
     if (!page || !block || !doc_id) {
         set_error(ERROR_INVALID_FORMAT);
@@ -139,9 +136,8 @@ int add_block_to_page(parsed_page_t* page, raw_text_block_t* block, const char* 
     return 0;
 }
 
-/**
- * Add a page to a document.
- */
+// Add a page to a document.
+ 
 int add_page_to_document(parsed_document_t* doc, parsed_page_t* page) {
     if (!doc || !page) {
         set_error(ERROR_INVALID_FORMAT);
@@ -170,9 +166,7 @@ int add_page_to_document(parsed_document_t* doc, parsed_page_t* page) {
     return 0;
 }
 
-/**
- * Free entire document hierarchy.
- */
+// Free entire document hierarchy recursively
 void free_doc(parsed_document_t* doc) {
     if (!doc) return;
 
@@ -223,4 +217,34 @@ void free_doc(parsed_document_t* doc) {
 
     // Free document struct itself
     free(doc);
+}
+
+void cleanup_parse_state(parsed_document_t* doc, parsed_page_t* page, char** paragraphs, size_t paragraph_count, char* contents) {
+    if (page) {
+        for (size_t i = 0; i < page->block_count; i++) {
+            raw_text_block_t* block = page->blocks[i];
+            if (block) {
+                if (block->id) free(block->id);
+                if (block->content) free(block->content);
+                free(block);
+            }
+        }
+        if (page->blocks) free(page->blocks);
+        free(page);
+    }
+
+    if (paragraphs) {
+        for (size_t i = 0; i < paragraph_count; i++) {
+            free(paragraphs[i]);
+        }
+        free(paragraphs);
+    }
+    
+    if (contents) {
+        free(contents);
+    }
+    
+    if (doc) {
+        free_doc(doc);
+    }
 }

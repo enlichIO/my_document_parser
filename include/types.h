@@ -37,6 +37,7 @@ typedef struct {
 /*parsed pages structure (page container)
 page_id= unique identifier for tracking the page= the filename of the source document 
 block_count= the number of text blocks in the page
+blocks= an array of pointers to structures representing the blocks in the page
 */
 typedef struct parsed_page{
      size_t page_number;
