@@ -28,10 +28,16 @@ typedef struct {
     char* id;
     char* content;
     block_type_t type;
-    float confidence;
-    size_t page_number;
+    
+    // For TXT files: line numbers in the original file
     size_t line_start;
     size_t line_end;
+    
+    // For PDF files: page and bounding box
+    // Set to -1 for non-PDF sources
+    int page_number;
+    float bbox_x0, bbox_y0; // Top-left corner
+    float bbox_x1, bbox_y1; // Bottom-right corner
 } raw_text_block_t;
 
 /*parsed pages structure (page container)

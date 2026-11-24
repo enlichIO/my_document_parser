@@ -3,18 +3,27 @@
 
 #include "types.h"
 
-// create a parsed_document_t structure and initialize its fields, Returns NULL if memory allocation fails.
 parsed_document_t* create_document(const char* source_path);
-// create a parsed_page_t structure and initialize its fields, Returns NULL if memory allocation fails.
 parsed_page_t* create_page(size_t page_number);
-// create a raw_text_block_t structure and initialize its fields, Returns NULL if memory allocation fails.
-raw_text_block_t* create_block(const char* content, size_t page_number,block_type_t type,size_t line_start,size_t line_end);
-//create a block to add to a page, Returns NULL if memory allocation fails.
-int add_block_to_page(parsed_page_t* page, raw_text_block_t* block, const char* doc_id);
-//create a page to add to a document
-int add_page_to_document(parsed_document_t* doc, parsed_page_t* page);
-//recursively free a parsed_document_t structure and all its associated pages and blocks
-void free_doc(parsed_document_t* doc);
-void cleanup_parse_state(parsed_document_t* doc, parsed_page_t* page, char** paragraphs, size_t paragraph_count, char* contents);
 
-#endif
+// Unified block creation (supports both TXT lines and PDF bounding boxes)
+raw_text_block_t* create_block(const char* content, size_t line_start, size_t line_end,int page_number, block_type_t type,float bbox_x0, float bbox_y0, float bbox_x1, float bbox_y1);
+
+// Convenience wrapper for PDF (sets lines to 0)
+raw_text_block_t* create_block_pdf(const char* content, int page_number,block_type_t type, float bbox_x0, float bbox_y0,float bbox_x1, float bbox_y1);
+
+// Convenience wrapper for TXT (sets page to -1, bbox to 0)
+raw_text_block_t* create_block_txt(const char* content, size_t line_start, size_t line_end,block_type_t type);
+
+int add_block_to_page(parsed_page_t* page, raw_text_block_t* block, const char* doc_id);
+int add_page_to_document(parsed_document_t* doc, parsed_page_t* page);
+
+void free_block(raw_text_block_t* block);
+void free_page(parsed_page_t* page);
+void free_doc(parsed_document_t* doc);
+
+// DYNAMIC CLEANUP: Reusable by ANY parser (TXT, PDF, HTML, etc.)
+// Pass NULL for arguments you don't need to free.
+void cleanup_parse_state(parsed_document_t* doc, parsed_page_t* page, char** string_array, size_t string_count, char* single_string);
+
+#endif /* MEMORY_H */
