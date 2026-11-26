@@ -10,13 +10,19 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef DEBUG_PARSER
+    #define DEBUG_LOG(fmt, ...) fprintf(stderr, "[PDF DEBUG] %s:%d: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#else
+    #define DEBUG_LOG(fmt, ...)
+#endif
+
 // converter from pdf_binary to standard text
 static char* converter_(fz_stext_block *block) {
     if (!block || block->type != FZ_STEXT_BLOCK_TEXT) {
         return NULL;
     }
 
-    // calculate total length needed \  
+    // calculate total length needed 
     size_t total_length = 0;
     for (fz_stext_line *line = block->u.t.first_line; line; line = line->next) {
         for (fz_stext_char *ch = line->first_char; ch; ch = ch->next) {
@@ -64,7 +70,7 @@ static bool process_text_block(fz_stext_block *block, int page_num, const char *
     if (!block || block->type != FZ_STEXT_BLOCK_TEXT) return false;
 
     // 1. Extract raw text
-    char *block_text = extract_block_text(block);
+    char *block_text = converter_(block);
     if (!block_text) return false;
 
     //  Get bounding box BEFORE freeing anything
@@ -125,10 +131,21 @@ parsed_document_t* parse_pdf_file(const char* filepath, const char* password) {
 
     // Open document (with password)
     fz_try(ctx) {
-        mupdf_doc = fz_open_document_with_password(ctx, filepath, password ? password : "");
+        mupdf_doc = fz_open_document(ctx, filepath);
+        
+        // If a password is provided and the doc needs it, authenticate
+        if (password && fz_needs_password(ctx, mupdf_doc)) {
+            if (!fz_authenticate_password(ctx, mupdf_doc, password)) {
+                DEBUG_LOG("Incorrect password for PDF: %s", filepath);
+                fz_drop_document(ctx, mupdf_doc);
+                fz_drop_context(ctx);
+                set_error(ERROR_INVALID_FORMAT);
+                return NULL;
+            }
+        }
     } fz_catch(ctx) {
         DEBUG_LOG("Cannot open PDF file: %s", filepath);
-        set_error(ERROR_FILE_NOT_FOUND); // Or a specific ERROR_ENCRYPTED if you add one
+        set_error(ERROR_FILE_NOT_FOUND);
         fz_drop_context(ctx);
         return NULL;
     }
@@ -167,15 +184,12 @@ parsed_document_t* parse_pdf_file(const char* filepath, const char* password) {
             if (!our_page) {
                 DEBUG_LOG("Failed to create page %d structure, skipping page.", p);
             } else {
-                // Iterate through blocks (fast, flat array iteration)
-                for (int b = 0; b < text_page->len; b++) {
-                    fz_stext_block *block = &text_page->blocks[b];
-
+                // ✅ FIXED: Modern MuPDF uses a linked list, not an array!
+                for (fz_stext_block *block = text_page->first_block; block; block = block->next) {
                     if (block->type == FZ_STEXT_BLOCK_TEXT) {
                         process_text_block(block, p, result_doc->id, our_page);
-                        // The helper handles individual block failures non-fatally.
                     } else if (block->type == FZ_STEXT_BLOCK_IMAGE) {
-                        DEBUG_LOG("Skipping image block on page %d, block %d", p, b);
+                        DEBUG_LOG("Skipping image block on page %d", p);
                     }
                 }
 
@@ -190,16 +204,17 @@ parsed_document_t* parse_pdf_file(const char* filepath, const char* password) {
             DEBUG_LOG("MuPDF error on page %d: %s. Skipping page.", p, fz_caught_message(ctx));
         }
 
+        // Cleanup orphaned page if it wasn't successfully added to the document
         if (!page_success && our_page) {
             free_page(our_page);
         }
 
-        // Cleanup MuPDF resources for this specific page (success path)
+        // Cleanup MuPDF resources for this specific page (safe even if NULL)
         if (text_page) fz_drop_stext_page(ctx, text_page);
         if (mupdf_page) fz_drop_page(ctx, mupdf_page);
     }
 
-    // Final MuPDF Cleanup (success path)
+    // 5. Final MuPDF Cleanup (success path)
     fz_drop_document(ctx, mupdf_doc);
     fz_drop_context(ctx);
 

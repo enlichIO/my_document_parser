@@ -43,3 +43,10 @@ lines.
 
 This paragraph ends with many newlines.
 EOF
+
+git commit -m "feat: complete robust TXT parser with unified memory management
+
+- Add cleanup_parse_state to memory system for safe, reusable error handling across parsers
+- Unify block creation with create_block_txt and create_block_pdf wrappers
+- Add bounding box and page number fields to raw_text_block_t for future PDF support
+- Verified zero memory leaks via Valgrind stress testing"
