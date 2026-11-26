@@ -23,5 +23,13 @@ bool double_newlines_parag(const char* text);
 
 char** split_into_paragraphs(const char* text, size_t* count, bool use_double_newline);
 
+// Genera un ID univoco per il documento basato su nome file e hash del contenuto
+char* generate_document_id(const char* filepath, const char* content, size_t content_len);
+
+// Calcola la similarità tra due stringhe (0.0 a 1.0)
+double string_similarity(const char* s1, const char* s2);
+
+// Rimuove blocchi duplicati all'interno di una pagina (soglia 0.0 - 1.0)
+void deduplicate_page_blocks(parsed_page_t* page, double threshold);
 
 #endif // STRING_UTILS_H
