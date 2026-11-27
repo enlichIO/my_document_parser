@@ -12,6 +12,7 @@ typedef enum {
     BLOCK_TYPE_FOOTER,
     BLOCK_TYPE_CODEBLOCK,
     BLOCK_TYPE_IMAGE,
+    BLOCK_TYPE_TABLE,
 } block_type_t;
 /*
      Represents a raw text block extracted from a document.

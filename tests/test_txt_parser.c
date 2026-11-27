@@ -5,6 +5,7 @@
 #include "../include/error.h"
 #include "../include/types.h"
 #include "../include/memory.h"
+#include "registry.h"
 
 void test_file(const char* filepath) {
     printf("\n========================================\n");
@@ -14,11 +15,11 @@ void test_file(const char* filepath) {
     parsed_document_t* doc = parse_txt_file(filepath);
     
     if (!doc) {
-        printf("❌ FAILED - Error: %s\n\n", parser_error_to_string(get_error()));
+        printf(" FAILED - Error: %s\n\n", parser_error_to_string(get_error()));
         return;
     }
 
-    printf("✅ SUCCESS\n");
+    printf(" SUCCESS\n");
     printf("   Pages: %zu\n", doc->page_count);
     
     if (doc->page_count > 0) {
@@ -51,5 +52,6 @@ int main() {
     test_file("tests/txt_testers/windows_crlf.txt");
 
     printf("\n=== ALL TESTS COMPLETE ===\n");
+    registry_cleanup();
     return 0;
 }

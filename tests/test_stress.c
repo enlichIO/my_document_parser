@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/txt_parser.h"
-#include "../include/errors.h"
+#include "../include/error.h"
 #include "../include/types.h"
 #include "../include/memory.h"
-
+#include "registry.h"
 void test_file(const char* filepath) {
     printf("\n========================================\n");
     printf("Testing: %s\n", filepath);
@@ -14,11 +14,11 @@ void test_file(const char* filepath) {
     parsed_document_t* doc = parse_txt_file(filepath);
     
     if (!doc) {
-        printf("❌ FAILED - Error: %s\n\n", parser_error_to_string(get_error()));
+        printf(" FAILED - Error: %s\n\n", parser_error_to_string(get_error()));
         return;
     }
 
-    printf("✅ SUCCESS\n");
+    printf(" SUCCESS\n");
     printf("   Pages: %zu\n", doc->page_count);
     
     if (doc->page_count > 0) {

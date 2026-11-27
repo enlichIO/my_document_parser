@@ -4,9 +4,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <mupdf/fitz.h>
-#include "../include/pdf_parser.h"
-#include "../include/memory.h"
-#include "../include/error.h"
+#include "pdf_parser.h"
+#include "memory.h"
+#include "error.h"
+#include "registry.h"
 
 const char* type_to_string(block_type_t type) {
     switch (type) {
@@ -33,7 +34,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    printf("✅ PDF parsed successfully!\n");
+    printf(" PDF parsed successfully!\n");
     printf("   Source: %s\n", doc->source_file_path);
     printf("   ID: %s\n", doc->id ? doc->id : "NULL");
     printf("   Total Pages: %zu\n\n", doc->page_count);
@@ -65,7 +66,7 @@ int main(int argc, char** argv) {
     }
 
     free_doc(doc);
-    
+    registry_cleanup();
     printf("=== Test Finished Successfully (Memory Freed) ===\n");
     return 0;
 }

@@ -10,6 +10,44 @@
 
 //oh boy this file has gone out of hand
 //will maybe split if too big
+// Controlla se un blocco è junk/garbage (troppi caratteri non stampabili)
+bool is_text_junk(const char *text) {
+    if (!text || strlen(text) == 0) return true;
+    
+    size_t len = strlen(text);
+    size_t junk_count = 0;
+    
+    for (size_t i = 0; i < len; i++) {
+        unsigned char c = (unsigned char)text[i];
+        // Conta caratteri non stampabili (escluso spazio, tab, newline)
+        if (!isprint(c) && c != ' ' && c != '\t' && c != '\n') {
+            junk_count++;
+        }
+    }
+
+    // Se più del 15% è junk, lo consideriamo spazzatura
+    return ((double)junk_count / len) > 0.15;
+}
+
+// Controlla se un blocco sembra una tabella (molte colonne numeriche/allineate)
+bool is_likely_table(const char *text) {
+    if (!text || strlen(text) < 10) return false;
+    
+    int space_count = 0;
+    int digit_count = 0;
+    size_t len = strlen(text);
+    
+    for (size_t i = 0; i < len; i++) {
+        if (text[i] == ' ') space_count++;
+        if (isdigit((unsigned char)text[i])) digit_count++;
+    }
+    
+    double space_ratio = (double)space_count / len;
+    double digit_ratio = (double)digit_count / len;
+    
+    // Euristica: se ha molti spazi (colonne) e molti numeri, è probabile sia una tabella
+    return (space_ratio > 0.25 && digit_ratio > 0.2);
+}
 
 // Hash semplice e veloce per generare ID
 static unsigned long hash_buffer(const unsigned char* data, size_t length) {

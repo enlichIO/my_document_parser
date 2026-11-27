@@ -1,6 +1,7 @@
 
 #include "string_utils.h"
 #include "error.h"
+#include "registry.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,7 +9,7 @@ int main() {
     const char* filepath = "lorem.txt";
     printf("=== Starting String Utils Test ===\n\n");
 
-    // 1. Read file
+  
     printf("1. Reading file: %s\n", filepath);
     char* contents = read_file_contents(filepath);
     if (!contents) {
@@ -17,7 +18,7 @@ int main() {
     }
     printf("   SUCCESS: Read %zu bytes.\n\n", strlen(contents));
 
-    // 2. Determine splitting strategy
+  
     bool use_double = double_newlines_parag(contents);
     printf("2. Heuristic check: Use double newlines? %s\n\n", use_double ? "YES" : "NO");
 
@@ -31,7 +32,7 @@ int main() {
     }
     printf("3. Splitting SUCCESS: Found %zu paragraphs.\n\n", count);
 
-    // 4. Process each paragraph
+
     printf("4. Processing paragraphs:\n");
     printf("--------------------------------------------------\n");
     for (size_t i = 0; i < count; i++) {
@@ -66,7 +67,6 @@ int main() {
     }
     printf("--------------------------------------------------\n\n");
 
-    // 5. Cleanup
     printf("5. Cleaning up memory...\n");
     for (size_t i = 0; i < count; i++) {
         free(paragraphs[i]); // Free each paragraph string

@@ -1,74 +1,25 @@
-# Prerequisites
-*.d
-
-# Object files
+# File oggetto e eseguibili compilati
 *.o
-*.ko
-*.obj
-*.elf
+test_pdf
+test_txt
+test_epub
+test_json
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# File di output
+output.json
+registry.json
 
-# Precompiled Headers
-*.gch
-*.pch
+# File di sistema
+.DS_Store
+Thumbs.db
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
-
-
-
-# --- Custom additions for my_document_parser ---
-
-# WebAssembly output
-*.wasm
-
-# Modern build directories
-build/
-cmake-build-*/
-out/
-
-# Editor/IDE settings
+# Editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# Build artifacts
+build/
+dist/

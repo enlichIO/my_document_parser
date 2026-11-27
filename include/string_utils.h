@@ -4,9 +4,12 @@
 #include "../include/types.h"
 #include <stdbool.h>
 #include <stddef.h>
-
 #include <stdbool.h> /* For bool type */
 #include <stddef.h>  /* For size_t */
+#include <ctype.h>
+
+bool is_text_junk(const char *text);
+bool is_likely_table(const char *text);
 
 //Returns a normalized copy of the input string.Trims leading/trailing whitespace and collapses internal whitespace, Returns NULL if input is NULL or memory allocation fails.
 char* normalize_text(const char* input);

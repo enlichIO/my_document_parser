@@ -1,6 +1,6 @@
 #include <stdlib.h>  // Required for malloc, free, strdup
 #include <string.h>  // Often required for string functions, though strdup is in stdlib on some systems
-
+#include "registry.h"
 #include "../include/types.h"
 #include "../include/memory.h"
 #include "../include/error.h"
